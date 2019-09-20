@@ -155,7 +155,7 @@ int scm_set_dload_mode(int arg1, int arg2)
 				&desc);
 }
 
-static void set_dload_mode(int on)
+void set_dload_mode(int on)
 {
 	int ret;
 
@@ -165,6 +165,7 @@ static void set_dload_mode(int on)
 		       dload_mode_addr + sizeof(unsigned int));
 		mb();
 	}
+	pr_err("[kk]set dload mode\n");
 
 	ret = scm_set_dload_mode(on ? dload_type : 0, 0);
 	if (ret)
@@ -241,8 +242,9 @@ EXPORT_SYMBOL(set_QPSTInfo_dloadmode);
 // ASUS BSP --- set download_mode when writing QPSTInfo
 
 #else
-static void set_dload_mode(int on)
+void set_dload_mode(int on)
 {
+    printfk("set_dload_mode return;");
 	return;
 }
 

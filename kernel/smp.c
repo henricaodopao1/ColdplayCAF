@@ -87,6 +87,7 @@ hotplug_cfd(struct notifier_block *nfb, unsigned long action, void *hcpu)
 		 * still pending.
 		 */
 		flush_smp_call_function_queue(false);
+		irq_work_run();
 		break;
 #endif
 	};
@@ -207,6 +208,14 @@ static int generic_exec_single(int cpu, struct call_single_data *csd,
 void generic_smp_call_function_single_interrupt(void)
 {
 	flush_smp_call_function_queue(true);
+
+	/*
+	 * Handle irq works queued remotely by irq_work_queue_on().
+	 * Smp functions above are typically synchronous so they
+	 * better run first since some other CPUs may be busy waiting
+	 * for them.
+	 */
+	irq_work_run();
 }
 
 /**
@@ -283,14 +292,6 @@ static void flush_smp_call_function_queue(bool warn_cpu_offline)
 		csd_unlock(csd);
 		func(info);
 	}
-
-	/*
-	 * Handle irq works queued remotely by irq_work_queue_on().
-	 * Smp functions above are typically synchronous so they
-	 * better run first since some other CPUs may be busy waiting
-	 * for them.
-	 */
-	irq_work_run();
 }
 
 void flush_smp_call_function_from_idle(void)

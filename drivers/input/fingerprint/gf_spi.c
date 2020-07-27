@@ -526,7 +526,7 @@ static irqreturn_t gf_irq(int irq, void *handle)
 	kobject_uevent(&gf_dev->spi->dev.kobj, KOBJ_CHANGE);
 
 	//printk("[GDX_FP] irqreturn: netlink enable \n");
-	wake_lock_timeout(&fp_wakelock, msecs_to_jiffies(WAKELOCK_HOLD_TIME));
+	wake_lock_timeout(&fp_wakelock, WAKELOCK_HOLD_TIME);
 	sendnlmsg(&msg);
 	//printk("[GDX_FP] irqreturn \n");
 	return IRQ_HANDLED;
